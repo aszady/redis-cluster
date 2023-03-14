@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  web:
+    build: web
+    ports:
+      - "43382:80"
+    stop_grace_period: 0.5s
+  redis:
+    image: redis:alpine
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    configs:
+      - source: redis_config
+        target: /usr/local/etc/redis/redis.conf
+    deploy:
+      replicas: 6
+  initialize:
+    build: rci
+    depends_on:
+      - redis
+    tty: true
+configs:
+  redis_config:
+    file: redis/redis.conf
